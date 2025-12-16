@@ -1,0 +1,1376 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>L'impression 3D médicale : une révolution technologique</title>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Source Sans Pro', sans-serif;
+            overflow: hidden;
+            background-color: #f5f7fa;
+        }
+        .presentation-container {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        .slide {
+            width: 1280px;
+            min-height: 720px;
+            position: absolute;
+            background-color: #ffffff;
+            color: #0a3d62;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        .slide.active {
+            display: flex;
+            z-index: 10;
+        }
+        .slide-nav {
+            position: absolute;
+            bottom: 20px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            z-index: 100;
+        }
+        .nav-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: rgba(10, 61, 98, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .nav-dot.active {
+            background-color: #27ae60;
+            transform: scale(1.2);
+        }
+        .nav-button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(255, 255, 255, 0.8);
+            color: #0a3d62;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+            transition: all 0.3s ease;
+        }
+        .nav-button:hover {
+            background-color: #27ae60;
+            color: white;
+        }
+        .nav-button.prev {
+            left: 20px;
+        }
+        .nav-button.next {
+            right: 20px;
+        }
+        .header {
+            padding: 40px 70px 20px;
+        }
+        .title {
+            font-size: 40px;
+            font-weight: 700;
+            color: #0a3d62;
+            position: relative;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+        .title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 80px;
+            height: 4px;
+            background-color: #27ae60;
+        }
+        .content {
+            display: flex;
+            flex-grow: 1;
+            padding: 20px 70px 40px;
+        }
+        .text-content {
+            flex: 1;
+            padding-right: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .image-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .image-wrapper {
+            width: 100%;
+            height: 400px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(10, 61, 98, 0.1);
+            position: relative;
+        }
+        .image-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .image-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(10, 61, 98, 0.8), transparent);
+            padding: 20px;
+            color: white;
+        }
+        .image-caption {
+            font-size: 18px;
+            font-weight: 500;
+        }
+        /* Slide 1 - Title */
+        .slide-1 {
+            background: linear-gradient(135deg, #0a3d62 0%, #1e3799 100%);
+            color: white;
+            justify-content: center;
+            align-items: center;
+        }
+        .slide-1 .content {
+            text-align: center;
+            z-index: 2;
+            padding: 0 100px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .slide-1 .title {
+            font-size: 64px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            line-height: 1.2;
+            color: white;
+        }
+        .slide-1 .title::after {
+            background-color: #27ae60;
+        }
+        .slide-1 .subtitle {
+            font-size: 28px;
+            font-weight: 400;
+            margin-bottom: 60px;
+            color: white;
+        }
+        .slide-1 .presenters {
+            font-size: 22px;
+            font-weight: 300;
+            color: white;
+        }
+        .bg-decoration {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            opacity: 0.1;
+            z-index: 1;
+        }
+        .circle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .circle-1 {
+            width: 300px;
+            height: 300px;
+            top: -100px;
+            right: -100px;
+        }
+        .circle-2 {
+            width: 200px;
+            height: 200px;
+            bottom: -50px;
+            left: -50px;
+        }
+        .circle-3 {
+            width: 150px;
+            height: 150px;
+            top: 70%;
+            right: 10%;
+        }
+        /* Slide 2 - Plan */
+        .slide-2 .content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex-grow: 1;
+        }
+        .plan-list {
+            list-style: none;
+            width: 100%;
+            max-width: 800px;
+        }
+        .plan-item {
+            font-size: 24px;
+            font-weight: 400;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+        }
+        .plan-item i {
+            color: #27ae60;
+            margin-right: 15px;
+            font-size: 28px;
+        }
+        /* Slide 3 - Introduction */
+        .definition {
+            font-size: 24px;
+            font-weight: 400;
+            margin-bottom: 40px;
+            line-height: 1.4;
+        }
+        .keywords-container {
+            margin-top: 20px;
+        }
+        .keywords-title {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #0a3d62;
+        }
+        .keywords {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .keyword {
+            background-color: rgba(39, 174, 96, 0.1);
+            color: #27ae60;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-size: 20px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+        }
+        .keyword i {
+            margin-right: 8px;
+            font-size: 20px;
+        }
+        /* Slide 4 - Évolution historique */
+        .evolution-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-top: 20px;
+            flex-grow: 1;
+        }
+        .evolution-item {
+            flex: 1 1 calc(50% - 15px);
+            background-color: rgba(10, 61, 98, 0.03);
+            border-radius: 12px;
+            padding: 25px;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            min-height: 120px;
+            box-shadow: 0 4px 12px rgba(10, 61, 98, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .evolution-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(10, 61, 98, 0.1);
+        }
+        .evolution-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 6px;
+            height: 100%;
+            background-color: #27ae60;
+        }
+        .evolution-icon {
+            background-color: rgba(39, 174, 96, 0.1);
+            color: #27ae60;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 20px;
+            flex-shrink: 0;
+        }
+        .evolution-icon i {
+            font-size: 30px;
+        }
+        .evolution-text {
+            flex-grow: 1;
+        }
+        .evolution-year {
+            font-size: 22px;
+            font-weight: 700;
+            color: #0a3d62;
+            margin-bottom: 8px;
+        }
+        .evolution-desc {
+            font-size: 20px;
+            font-weight: 400;
+            color: #34495e;
+        }
+        /* Slide 5 - Principe de la bio-impression */
+        .principle-container {
+            margin-top: 20px;
+        }
+        .principle-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            background-color: rgba(10, 61, 98, 0.03);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(10, 61, 98, 0.05);
+            transition: transform 0.3s ease;
+        }
+        .principle-item:hover {
+            transform: translateX(10px);
+        }
+        .principle-icon {
+            background-color: rgba(39, 174, 96, 0.1);
+            color: #27ae60;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 20px;
+            flex-shrink: 0;
+        }
+        .principle-icon i {
+            font-size: 30px;
+        }
+        .principle-text {
+            flex-grow: 1;
+        }
+        .principle-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #0a3d62;
+            margin-bottom: 8px;
+        }
+        .principle-desc {
+            font-size: 20px;
+            color: #34495e;
+            line-height: 1.4;
+        }
+        .highlight {
+            color: #27ae60;
+            font-weight: 600;
+        }
+        .diagram {
+            width: 100%;
+            height: 400px;
+            background-color: rgba(10, 61, 98, 0.03);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 30px rgba(10, 61, 98, 0.1);
+        }
+        .diagram-title {
+            font-size: 22px;
+            font-weight: 600;
+            color: #0a3d62;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .process-steps {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            margin-top: 20px;
+        }
+        .process-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 30%;
+        }
+        .step-icon {
+            width: 70px;
+            height: 70px;
+            background-color: #0a3d62;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .step-icon i {
+            font-size: 35px;
+        }
+        .step-text {
+            text-align: center;
+            font-size: 18px;
+            font-weight: 500;
+            color: #34495e;
+        }
+        .arrow {
+            color: #27ae60;
+            font-size: 40px;
+            display: flex;
+            align-items: center;
+            margin-top: 25px;
+        }
+        /* Slide 6 - Harvard et Co-SWIFT */
+        .feature-container {
+            margin-top: 20px;
+        }
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 30px;
+            background-color: rgba(10, 61, 98, 0.03);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(10, 61, 98, 0.05);
+            transition: transform 0.3s ease;
+        }
+        .feature-item:hover {
+            transform: translateX(10px);
+        }
+        .feature-icon {
+            background-color: rgba(39, 174, 96, 0.1);
+            color: #27ae60;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 20px;
+            flex-shrink: 0;
+        }
+        .feature-icon i {
+            font-size: 30px;
+        }
+        .feature-text {
+            flex-grow: 1;
+        }
+        .feature-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #0a3d62;
+            margin-bottom: 8px;
+        }
+        .feature-desc {
+            font-size: 20px;
+            color: #34495e;
+            line-height: 1.4;
+        }
+        /* Slide 7 - Travaux de Stanford */
+        .stanford-feature {
+            background-color: rgba(10, 61, 98, 0.03);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(10, 61, 98, 0.05);
+            transition: transform 0.3s ease;
+        }
+        .stanford-feature:hover {
+            transform: translateX(10px);
+        }
+        .feature-title {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .feature-heading {
+            font-size: 24px;
+            font-weight: 600;
+            color: #0a3d62;
+        }
+        .feature-desc {
+            font-size: 20px;
+            color: #34495e;
+            line-height: 1.4;
+            margin-left: 80px;
+        }
+        .quote-container {
+            background-color: rgba(39, 174, 96, 0.05);
+            border-left: 4px solid #27ae60;
+            padding: 25px 30px;
+            border-radius: 0 12px 12px 0;
+            margin-top: 20px;
+        }
+        .quote {
+            font-size: 24px;
+            font-style: italic;
+            color: #0a3d62;
+            line-height: 1.4;
+            position: relative;
+        }
+        .quote::before {
+            content: '"';
+            font-size: 60px;
+            color: rgba(39, 174, 96, 0.2);
+            position: absolute;
+            left: -20px;
+            top: -20px;
+        }
+        .quote::after {
+            content: '"';
+            font-size: 60px;
+            color: rgba(39, 174, 96, 0.2);
+            position: absolute;
+            margin-left: 5px;
+            line-height: 0;
+            bottom: -40px;
+        }
+        /* Slide 8 - Avantages */
+        .advantages-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            margin-top: 20px;
+            flex-grow: 1;
+        }
+        .advantage-card {
+            background-color: rgba(10, 61, 98, 0.03);
+            border-radius: 12px;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(10, 61, 98, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .advantage-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(10, 61, 98, 0.1);
+        }
+        .advantage-icon {
+            background-color: rgba(39, 174, 96, 0.1);
+            color: #27ae60;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .advantage-icon i {
+            font-size: 40px;
+        }
+        .advantage-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #0a3d62;
+            margin-bottom: 15px;
+        }
+        .advantage-desc {
+            font-size: 20px;
+            color: #34495e;
+            line-height: 1.4;
+        }
+        /* Slide 9 - Défis */
+        .challenge-container {
+            margin-top: 20px;
+        }
+        .challenge-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 30px;
+            background-color: rgba(10, 61, 98, 0.03);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 12px rgba(10, 61, 98, 0.05);
+            transition: transform 0.3s ease;
+        }
+        .challenge-item:hover {
+            transform: translateX(10px);
+        }
+        .challenge-icon {
+            background-color: rgba(39, 174, 96, 0.1);
+            color: #27ae60;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 20px;
+            flex-shrink: 0;
+        }
+        .challenge-icon i {
+            font-size: 30px;
+        }
+        .challenge-text {
+            flex-grow: 1;
+        }
+        .challenge-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #0a3d62;
+            margin-bottom: 8px;
+        }
+        .challenge-desc {
+            font-size: 20px;
+            color: #34495e;
+            line-height: 1.4;
+        }
+        /* Slide 10 - Avenir */
+        .future-container {
+            margin-top: 20px;
+        }
+        .future-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 30px;
+            background-color: rgba(10, 61, 98, 0.03);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 12px rgba(10, 61, 98, 0.05);
+            transition: transform 0.3s ease;
+        }
+        .future-item:hover {
+            transform: translateX(10px);
+        }
+        .future-icon {
+            background-color: rgba(39, 174, 96, 0.1);
+            color: #27ae60;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 20px;
+            flex-shrink: 0;
+        }
+        .future-icon i {
+            font-size: 30px;
+        }
+        .future-text {
+            flex-grow: 1;
+        }
+        .future-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #0a3d62;
+            margin-bottom: 8px;
+        }
+        .future-desc {
+            font-size: 20px;
+            color: #34495e;
+            line-height: 1.4;
+        }
+        /* Slide 11 - Conclusion */
+        .slide-11 {
+            background: linear-gradient(135deg, #0a3d62 0%, #1e3799 100%);
+            color: white;
+            justify-content: center;
+            align-items: center;
+        }
+        .slide-11 .content {
+            text-align: center;
+            z-index: 2;
+            padding: 0 100px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex-grow: 1;
+        }
+        .quote-icon {
+            font-size: 60px;
+            color: rgba(255, 255, 255, 0.2);
+            margin-bottom: 20px;
+        }
+        .message {
+            font-size: 48px;
+            font-weight: 700;
+            line-height: 1.3;
+            margin-bottom: 40px;
+        }
+        .icon-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 50px;
+        }
+        .icon-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 15px;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+        }
+        .icon-circle:hover {
+            transform: translateY(-10px);
+            background-color: rgba(39, 174, 96, 0.2);
+        }
+        .icon-circle i {
+            font-size: 40px;
+            color: white;
+        }
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .fade-in {
+            animation: fadeIn 0.8s ease-in-out forwards;
+        }
+        .fade-in-delay-1 {
+            animation: fadeIn 0.8s ease-in-out 0.3s forwards;
+            opacity: 0;
+        }
+        .fade-in-delay-2 {
+            animation: fadeIn 0.8s ease-in-out 0.6s forwards;
+            opacity: 0;
+        }
+        .fade-in-delay-3 {
+            animation: fadeIn 0.8s ease-in-out 0.9s forwards;
+            opacity: 0;
+        }
+        .fade-in-delay-4 {
+            animation: fadeIn 0.8s ease-in-out 1.2s forwards;
+            opacity: 0;
+        }
+        .fade-in-delay-5 {
+            animation: fadeIn 0.8s ease-in-out 1.5s forwards;
+            opacity: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container">
+        <!-- Slide 1 - Titre -->
+        <div class="slide slide-1 active" id="slide-1">
+            <div class="bg-decoration">
+                <div class="circle circle-1"></div>
+                <div class="circle circle-2"></div>
+                <div class="circle circle-3"></div>
+            </div>
+            <div class="content">
+                <h1 class="title fade-in">L'impression 3D médicale</h1>
+                <h2 class="subtitle fade-in-delay-1">Une révolution technologique en médecine</h2>
+                <p class="presenters fade-in-delay-2">Présenté par : Nour – Mariem – Doaa – Bouchra</p>
+            </div>
+        </div>
+
+        <!-- Slide 2 - Plan -->
+        <div class="slide slide-2" id="slide-2">
+            <div class="header">
+                <h1 class="title fade-in">Plan</h1>
+            </div>
+            <div class="content">
+                <ul class="plan-list">
+                    <li class="plan-item fade-in">
+                        <i class="material-icons">arrow_right</i>
+                        Introduction et évolution
+                    </li>
+                    <li class="plan-item fade-in-delay-1">
+                        <i class="material-icons">arrow_right</i>
+                        Bio-impression et rôle de Harvard
+                    </li>
+                    <li class="plan-item fade-in-delay-2">
+                        <i class="material-icons">arrow_right</i>
+                        Travaux de Stanford et avantages
+                    </li>
+                    <li class="plan-item fade-in-delay-3">
+                        <i class="material-icons">arrow_right</i>
+                        Défis et avenir
+                    </li>
+                    <li class="plan-item fade-in-delay-4">
+                        <i class="material-icons">arrow_right</i>
+                        Conclusion
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 3 - Introduction -->
+        <div class="slide slide-3" id="slide-3">
+            <div class="header">
+                <h1 class="title fade-in">Introduction (Nour)</h1>
+            </div>
+            <div class="content">
+                <div class="text-content">
+                    <p class="definition fade-in">
+                        Processus de fabrication additive créant des objets tridimensionnels à partir de modèles numériques pour applications médicales
+                    </p>
+                    <div class="keywords-container fade-in-delay-1">
+                        <h3 class="keywords-title">Mots-clés</h3>
+                        <div class="keywords">
+                            <div class="keyword fade-in-delay-2">
+                                <i class="material-icons">computer</i>
+                                Modèle numérique
+                            </div>
+                            <div class="keyword fade-in-delay-2">
+                                <i class="material-icons">gps_fixed</i>
+                                Précision
+                            </div>
+                            <div class="keyword fade-in-delay-3">
+                                <i class="material-icons">accessibility_new</i>
+                                Implants personnalisés
+                            </div>
+                            <div class="keyword fade-in-delay-3">
+                                <i class="material-icons">biotech</i>
+                                Tissus biologiques
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="image-container fade-in">
+                    <div class="image-wrapper">
+                        <img src="https://sfile.chatglm.cn/images-ppt/4a0313e9eaa7.jpg" alt="Imprimante 3D médicale imprimant un cœur">
+                        <div class="image-overlay">
+                            <p class="image-caption">Imprimante 3D médicale</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4 - Évolution historique -->
+        <div class="slide slide-4" id="slide-4">
+            <div class="header">
+                <h1 class="title fade-in">Évolution historique (Nour)</h1>
+            </div>
+            <div class="content">
+                <div class="evolution-grid">
+                    <div class="evolution-item fade-in">
+                        <div class="evolution-icon">
+                            <i class="material-icons">history</i>
+                        </div>
+                        <div class="evolution-text">
+                            <div class="evolution-year">Années 1980</div>
+                            <div class="evolution-desc">Apparition des premières technologies d'impression 3D</div>
+                        </div>
+                    </div>
+                    <div class="evolution-item fade-in-delay-1">
+                        <div class="evolution-icon">
+                            <i class="material-icons">medical_services</i>
+                        </div>
+                        <div class="evolution-text">
+                            <div class="evolution-year">Années 1990</div>
+                            <div class="evolution-desc">Premières applications médicales et modèles anatomiques</div>
+                        </div>
+                    </div>
+                    <div class="evolution-item fade-in-delay-2">
+                        <div class="evolution-icon">
+                            <i class="material-icons">verified</i>
+                        </div>
+                        <div class="evolution-text">
+                            <div class="evolution-year">Années 2000</div>
+                            <div class="evolution-desc">Premiers implants approuvés par les autorités médicales</div>
+                        </div>
+                    </div>
+                    <div class="evolution-item fade-in-delay-3">
+                        <div class="evolution-icon">
+                            <i class="material-icons">biotech</i>
+                        </div>
+                        <div class="evolution-text">
+                            <div class="evolution-year">2010</div>
+                            <div class="evolution-desc">Développement de la bio-impression et premiers tissus vivants</div>
+                        </div>
+                    </div>
+                    <div class="evolution-item fade-in-delay-4" style="flex: 1 1 100%;">
+                        <div class="evolution-icon">
+                            <i class="material-icons">rocket_launch</i>
+                        </div>
+                        <div class="evolution-text">
+                            <div class="evolution-year">Après 2024</div>
+                            <div class="evolution-desc">Organes complets et médicaments personnalisés imprimés en 3D</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5 - Principe de la bio-impression -->
+        <div class="slide slide-5" id="slide-5">
+            <div class="header">
+                <h1 class="title fade-in">Principe de la bio-impression (Mariem)</h1>
+            </div>
+            <div class="content">
+                <div class="text-content">
+                    <div class="principle-container">
+                        <div class="principle-item fade-in">
+                            <div class="principle-icon">
+                                <i class="material-icons">science</i>
+                            </div>
+                            <div class="principle-text">
+                                <div class="principle-title">Bio-encres</div>
+                                <div class="principle-desc">
+                                    Matériaux supportant la vie cellulaire : <span class="highlight">gélatine</span>, <span class="highlight">collagène</span>, alginate, hyaluronane
+                                </div>
+                            </div>
+                        </div>
+                        <div class="principle-item fade-in-delay-1">
+                            <div class="principle-icon">
+                                <i class="material-icons">biotech</i>
+                            </div>
+                            <div class="principle-text">
+                                <div class="principle-title">Cellules vivantes</div>
+                                <div class="principle-desc">
+                                    Cellules souches, cellules différenciées, mécanismes de <span class="highlight">survie</span> et de <span class="highlight">croissance</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="image-container fade-in-delay-2">
+                    <div class="diagram">
+                        <h3 class="diagram-title">Processus de bio-impression</h3>
+                        <div class="process-steps">
+                            <div class="process-step">
+                                <div class="step-icon">
+                                    <i class="material-icons">model_training</i>
+                                </div>
+                                <div class="step-text">Modèle numérique 3D</div>
+                            </div>
+                            <div class="arrow">
+                                <i class="material-icons">arrow_forward</i>
+                            </div>
+                            <div class="process-step">
+                                <div class="step-icon">
+                                    <i class="material-icons">print</i>
+                                </div>
+                                <div class="step-text">Impression couche par couche</div>
+                            </div>
+                            <div class="arrow">
+                                <i class="material-icons">arrow_forward</i>
+                            </div>
+                            <div class="process-step">
+                                <div class="step-icon">
+                                    <i class="material-icons">healing</i>
+                                </div>
+                                <div class="step-text">Maturation du tissu</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6 - Harvard et Co-SWIFT -->
+        <div class="slide slide-6" id="slide-6">
+            <div class="header">
+                <h1 class="title fade-in">Harvard et Co-SWIFT (Mariem)</h1>
+            </div>
+            <div class="content">
+                <div class="text-content">
+                    <div class="feature-container">
+                        <div class="feature-item fade-in">
+                            <div class="feature-icon">
+                                <i class="material-icons">favorite</i>
+                            </div>
+                            <div class="feature-text">
+                                <div class="feature-title">Tissus cardiaques imprimés</div>
+                                <div class="feature-desc">
+                                    Capables de <span class="highlight">battre spontanément</span> comme un cœur vivant
+                                </div>
+                            </div>
+                        </div>
+                        <div class="feature-item fade-in-delay-1">
+                            <div class="feature-icon">
+                                <i class="material-icons">science</i>
+                            </div>
+                            <div class="feature-text">
+                                <div class="feature-title">Système Co-SWIFT</div>
+                                <div class="feature-desc">
+                                    Buse à <span class="highlight">noyau-coque</span> avec cellules endothéliales et musculaires lisses
+                                </div>
+                            </div>
+                        </div>
+                        <div class="feature-item fade-in-delay-2">
+                            <div class="feature-icon">
+                                <i class="material-icons">medication</i>
+                            </div>
+                            <div class="feature-text">
+                                <div class="feature-title">Tests médicamenteux</div>
+                                <div class="feature-desc">
+                                    Permet de <span class="highlight">tester les médicaments</span> sur tissus vivants sans animaux
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="image-container fade-in-delay-3">
+                    <div class="image-wrapper">
+                        <img src="https://sfile.chatglm.cn/images-ppt/e84cbac61050.jpg" alt="Tissus cardiaques imprimés par Harvard">
+                        <div class="image-overlay">
+                            <p class="image-caption">Structures cellulaires cardiaques imprimées par Harvard</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7 - Travaux de Stanford -->
+        <div class="slide slide-7" id="slide-7">
+            <div class="header">
+                <h1 class="title fade-in">Travaux de Stanford (Doaa)</h1>
+            </div>
+            <div class="content">
+                <div class="text-content">
+                    <div class="stanford-feature fade-in">
+                        <div class="feature-title">
+                            <div class="feature-icon">
+                                <i class="material-icons">bloodtype</i>
+                            </div>
+                            <h3 class="feature-heading">Réseaux vasculaires imprimés</h3>
+                        </div>
+                        <p class="feature-desc">
+                            Impression 3D de <span class="highlight">vaisseaux sanguins</span> complexes avec algorithme optimisé
+                        </p>
+                    </div>
+                    
+                    <div class="quote-container fade-in-delay-1">
+                        <p class="quote">Nous imprimons un système de survie pour les cellules</p>
+                    </div>
+                    
+                    <div class="stanford-feature fade-in-delay-2">
+                        <div class="feature-title">
+                            <div class="feature-icon">
+                                <i class="material-icons">biotech</i>
+                            </div>
+                            <h3 class="feature-heading">Avancée technologique</h3>
+                        </div>
+                        <p class="feature-desc">
+                            Création de <span class="highlight">1 million</span> de vaisseaux en 5 heures
+                        </p>
+                    </div>
+                </div>
+                <div class="image-container fade-in-delay-2">
+                    <div class="image-wrapper">
+                        <img src="https://sfile.chatglm.cn/images-ppt/a07231ea4e4a.png" alt="Vaisseaux sanguins imprimés par Stanford">
+                        <div class="image-overlay">
+                            <p class="image-caption">Réseau vasculaire imprimé par Stanford</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8 - Avantages -->
+        <div class="slide slide-8" id="slide-8">
+            <div class="header">
+                <h1 class="title fade-in">Avantages de la technologie (Doaa)</h1>
+            </div>
+            <div class="content">
+                <div class="advantages-grid">
+                    <div class="advantage-card fade-in">
+                        <div class="advantage-icon">
+                            <i class="material-icons">medical_services</i>
+                        </div>
+                        <h3 class="advantage-title">Aide à la chirurgie</h3>
+                        <p class="advantage-desc">
+                            Modèles <span class="highlight">pré-opératoires</span> personnalisés pour planification précise
+                        </p>
+                    </div>
+                    <div class="advantage-card fade-in-delay-1">
+                        <div class="advantage-icon">
+                            <i class="material-icons">accessibility_new</i>
+                        </div>
+                        <h3 class="advantage-title">Prothèses légères</h3>
+                        <p class="advantage-desc">
+                            Coût <span class="highlight">réduit</span> et adaptation parfaite à l'anatomie du patient
+                        </p>
+                    </div>
+                    <div class="advantage-card fade-in-delay-2">
+                        <div class="advantage-icon">
+                            <i class="material-icons">medication</i>
+                        </div>
+                        <h3 class="advantage-title">Médicaments personnalisés</h3>
+                        <p class="advantage-desc">
+                            Dosage <span class="highlight">précis</span> et libération contrôlée adaptée à chaque patient
+                        </p>
+                    </div>
+                    <div class="advantage-card fade-in-delay-3">
+                        <div class="advantage-icon">
+                            <i class="material-icons">healing</i>
+                        </div>
+                        <h3 class="advantage-title">Réparation tissulaire</h3>
+                        <p class="advantage-desc">
+                            Reconstruction de <span class="highlight">peau</span> et <span class="highlight">cartilage</span> avec cellules du patient
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 9 - Défis -->
+        <div class="slide slide-9" id="slide-9">
+            <div class="header">
+                <h1 class="title fade-in">Défis actuels (Bouchra)</h1>
+            </div>
+            <div class="content">
+                <div class="text-content">
+                    <div class="challenge-container">
+                        <div class="challenge-item fade-in">
+                            <div class="challenge-icon">
+                                <i class="material-icons">biotech</i>
+                            </div>
+                            <div class="challenge-text">
+                                <div class="challenge-title">Fragilité des cellules</div>
+                                <div class="challenge-desc">
+                                    Processus d'impression <span class="highlight">stressant</span> pour les cellules vivantes
+                                </div>
+                            </div>
+                        </div>
+                        <div class="challenge-item fade-in-delay-1">
+                            <div class="challenge-icon">
+                                <i class="material-icons">grain</i>
+                            </div>
+                            <div class="challenge-text">
+                                <div class="challenge-title">Tissus très fins</div>
+                                <div class="challenge-desc">
+                                    Limites de <span class="highlight">résolution</span> des imprimantes actuelles
+                                </div>
+                            </div>
+                        </div>
+                        <div class="challenge-item fade-in-delay-2">
+                            <div class="challenge-icon">
+                                <i class="material-icons">gavel</i>
+                            </div>
+                            <div class="challenge-text">
+                                <div class="challenge-title">Cadre légal et éthique</div>
+                                <div class="challenge-desc">
+                                    Manque de <span class="highlight">réglementation</span> et questions éthiques complexes
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="image-container fade-in-delay-3">
+                    <div class="image-wrapper">
+                        <img src="https://sfile.chatglm.cn/images-ppt/e7f0b05f1822.jpg" alt="Défis de la bio-impression 3D">
+                        <div class="image-overlay">
+                            <p class="image-caption">Défis techniques et éthiques de la bio-impression</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 10 - Avenir -->
+        <div class="slide slide-10" id="slide-10">
+            <div class="header">
+                <h1 class="title fade-in">Avenir de l'impression 3D médicale (Bouchra)</h1>
+            </div>
+            <div class="content">
+                <div class="text-content">
+                    <div class="future-container">
+                        <div class="future-item fade-in">
+                            <div class="future-icon">
+                                <i class="material-icons">favorite</i>
+                            </div>
+                            <div class="future-text">
+                                <div class="future-title">Organes complets</div>
+                                <div class="future-desc">
+                                    Transplantation d'organes <span class="highlight">personnalisés</span> dans 20-30 ans
+                                </div>
+                            </div>
+                        </div>
+                        <div class="future-item fade-in-delay-1">
+                            <div class="future-icon">
+                                <i class="material-icons">science</i>
+                            </div>
+                            <div class="future-text">
+                                <div class="future-title">Mini-organes</div>
+                                <div class="future-desc">
+                                    Tests médicamenteux <span class="highlight">précis</span> sans expérimentation animale
+                                </div>
+                            </div>
+                        </div>
+                        <div class="future-item fade-in-delay-2">
+                            <div class="future-icon">
+                                <i class="material-icons">smart_toy</i>
+                            </div>
+                            <div class="future-text">
+                                <div class="future-title">IA et robots</div>
+                                <div class="future-desc">
+                                    Optimisation des conceptions et <span class="highlight">automatisation</span> du processus
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="image-container fade-in-delay-3">
+                    <div class="image-wrapper">
+                        <img src="https://sfile.chatglm.cn/images-ppt/d33b4dddca07.jpg" alt="Avenir de l'impression 3D médicale">
+                        <div class="image-overlay">
+                            <p class="image-caption">Impression 3D d'organes personnalisés</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 11 - Conclusion -->
+        <div class="slide slide-11" id="slide-11">
+            <div class="bg-decoration">
+                <div class="circle circle-1"></div>
+                <div class="circle circle-2"></div>
+                <div class="circle circle-3"></div>
+            </div>
+            <div class="content">
+                <i class="material-icons quote-icon fade-in">format_quote</i>
+                <h1 class="message fade-in-delay-1">Une nouvelle ère <span class="highlight">régénérative</span> au service de l'humanité</h1>
+                <div class="icon-container fade-in-delay-2">
+                    <div class="icon-circle">
+                        <i class="material-icons">favorite</i>
+                    </div>
+                    <div class="icon-circle">
+                        <i class="material-icons">biotech</i>
+                    </div>
+                    <div class="icon-circle">
+                        <i class="material-icons">healing</i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <button class="nav-button prev" id="prev-slide">
+            <i class="material-icons">arrow_back</i>
+        </button>
+        <button class="nav-button next" id="next-slide">
+            <i class="material-icons">arrow_forward</i>
+        </button>
+        
+        <div class="slide-nav">
+            <div class="nav-dot active" data-slide="1"></div>
+            <div class="nav-dot" data-slide="2"></div>
+            <div class="nav-dot" data-slide="3"></div>
+            <div class="nav-dot" data-slide="4"></div>
+            <div class="nav-dot" data-slide="5"></div>
+            <div class="nav-dot" data-slide="6"></div>
+            <div class="nav-dot" data-slide="7"></div>
+            <div class="nav-dot" data-slide="8"></div>
+            <div class="nav-dot" data-slide="9"></div>
+            <div class="nav-dot" data-slide="10"></div>
+            <div class="nav-dot" data-slide="11"></div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const slides = document.querySelectorAll('.slide');
+            const navDots = document.querySelectorAll('.nav-dot');
+            const prevButton = document.getElementById('prev-slide');
+            const nextButton = document.getElementById('next-slide');
+            let currentSlide = 1;
+            const totalSlides = slides.length;
+
+            function showSlide(slideNumber) {
+                // Hide all slides
+                slides.forEach(slide => slide.classList.remove('active'));
+                
+                // Remove active class from all dots
+                navDots.forEach(dot => dot.classList.remove('active'));
+                
+                // Show current slide
+                document.getElementById(`slide-${slideNumber}`).classList.add('active');
+                
+                // Add active class to current dot
+                document.querySelector(`.nav-dot[data-slide="${slideNumber}"]`).classList.add('active');
+                
+                // Reset animations
+                const activeSlide = document.getElementById(`slide-${slideNumber}`);
+                const animatedElements = activeSlide.querySelectorAll('.fade-in, .fade-in-delay-1, .fade-in-delay-2, .fade-in-delay-3, .fade-in-delay-4, .fade-in-delay-5');
+                
+                animatedElements.forEach(element => {
+                    element.style.animation = 'none';
+                    setTimeout(() => {
+                        element.style.animation = '';
+                    }, 10);
+                });
+                
+                currentSlide = slideNumber;
+            }
+
+            // Navigation with buttons
+            prevButton.addEventListener('click', () => {
+                if (currentSlide > 1) {
+                    showSlide(currentSlide - 1);
+                }
+            });
+
+            nextButton.addEventListener('click', () => {
+                if (currentSlide < totalSlides) {
+                    showSlide(currentSlide + 1);
+                }
+            });
+
+            // Navigation with dots
+            navDots.forEach(dot => {
+                dot.addEventListener('click', () => {
+                    const slideNumber = parseInt(dot.getAttribute('data-slide'));
+                    showSlide(slideNumber);
+                });
+            });
+
+            // Keyboard navigation
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowLeft' && currentSlide > 1) {
+                    showSlide(currentSlide - 1);
+                } else if (e.key === 'ArrowRight' && currentSlide < totalSlides) {
+                    showSlide(currentSlide + 1);
+                }
+            });
+
+            // Initialize first slide
+            showSlide(1);
+        });
+    </script>
+</body>
+</html>
